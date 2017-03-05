@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 
-export default class Form extends Component {
+export default class AddEventForm extends Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -9,7 +9,6 @@ export default class Form extends Component {
     }
 
     handleSubmit(e) {
-        console.log(e);
         e.preventDefault();
         const newEvent = {
             title: this.refs.titleInput.value,

@@ -12,7 +12,8 @@
     "react-addons-test-utils": "^15.4.2",
     "react-scripts": "0.9.3",
     "react-test-renderer": "^15.4.2",
-    "regenerator-runtime": "^0.10.3"
+    "regenerator-runtime": "^0.10.3",
+    "sinon": "^1.17.7"
   },
   "dependencies": {
     "immutable": "^3.8.1",

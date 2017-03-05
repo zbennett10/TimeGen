@@ -12,9 +12,11 @@ describe('App', () => {
     shallow(
       <Provider store={createStore(reducers)}>
         <App/>
-      </Provider>
+      </Provider> ,
+      
       );
   });
+
 });
 
 

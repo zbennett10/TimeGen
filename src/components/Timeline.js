@@ -2,9 +2,8 @@ import React, {Component} from 'react';
 import vis from 'vis';
 import {connect} from 'react-redux';
 
-let timeline, items;
-
-const options = {
+let items;
+const timelineOptions = {
     height: 400,
     width: 1100,
     zoomMin: 1000 * 60 * 60 * 24,
@@ -15,15 +14,40 @@ const options = {
 export default class Timeline extends Component {
     constructor(props) {
         super(props);
+        this.createTimeline = this.createTimeline.bind(this);
+        this.configureEvent = this.configureEvent.bind(this);
+        this.convertISO = this.convertISO.bind(this);
     }
+
+    createTimeline() {
+        const container = document.getElementById('timelineContainer');
+        //help jest testing
+        if(!container) {
+            (function testCreateTimeline() {
+                const testContainer = document.createElement('div');
+                document.body.appendChild(testContainer);
+                const timeline = new vis.Timeline(testContainer, items, timelineOptions);
+            })();
+        }
+        const timeline = new vis.Timeline(container, items, timelineOptions)
+    }
+
+    configureEvent(event) {
+        return {id: event.id, content: event.title, start: this.convertISO(event.date)}
+    }
+
+    convertISO(dateString) {
+        return dateString.match(/[^T]*/)[0];
+    }
+
 
     componentDidMount() {
          const events = this.props.events.map(event => {
             console.log(event);
-            return {id: event.id, content: event.title, start: convertISO(event.date)}
+            return {id: event.id, content: event.title, start: this.convertISO(event.date)}
         });
         items = new vis.DataSet(events);
-        createTimeline();
+        this.createTimeline();
     }
 
     render() {
@@ -33,9 +57,8 @@ export default class Timeline extends Component {
                 items.remove(counter);
                 counter++;
             }
-            this.props.events.forEach(event => items.add(configureEvent(event)));
+            this.props.events.forEach(event => items.add(this.configureEvent(event)));
         }
-
 
         return(
             <div className="container text-center">
@@ -45,15 +68,5 @@ export default class Timeline extends Component {
     }
 }
 
-function configureEvent(event) {
-    return {id: event.id, content: event.title, start: convertISO(event.date)}
-}
 
-function createTimeline() {
-    const container = document.getElementById('timelineContainer');
-    timeline = new vis.Timeline(container, items, options)
-}
 
-function convertISO(dateString) {
-    return dateString.match(/[^T]*/)[0];
-}

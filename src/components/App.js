@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Form from './Form';
+import AddEventForm from './Add_Event_Form';
 import Event from './Event';
 import {connect} from 'react-redux';
 import * as actions from '../actions/index';
@@ -20,7 +20,7 @@ class App extends Component {
     return (
       <div className="row">
         <div className="col-8">
-          <Form addEvent={this.props.addEvent}/>
+          <AddEventForm addEvent={this.props.addEvent}/>
         </div>
         <div className="col-4">
           {events}
