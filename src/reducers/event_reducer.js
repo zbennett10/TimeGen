@@ -1,5 +1,7 @@
 import {EDIT_EVENT} from '../actions/types';
 import {ADD_EVENT} from '../actions/types';
+import {DELETE_EVENT} from '../actions/types';
+import {CLEAR_EVENTS} from '../actions/types';
 import {List} from 'immutable';
 import _ from 'lodash';
 
@@ -28,6 +30,11 @@ export default function(state = initialState, action) {
                 if(event.id === action.payload.id) oldEventIndex = index;
             })
             return List(state).delete(oldEventIndex).push(action.payload).toJS();
+        case DELETE_EVENT:
+            const deletionIndex = state.map(event => event.id).indexOf(action.payload.id);
+            return List(state).delete(deletionIndex).toJS();
+        case CLEAR_EVENTS:
+            return action.payload;
         default:
             return state;
     }
