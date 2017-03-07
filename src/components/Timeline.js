@@ -3,7 +3,7 @@ import vis from 'vis';
 import {connect} from 'react-redux';
 import '../index.css';
 
-let items;
+let timeline, items;
 const timelineOptions = {
     height: 400,
     width: 750,
@@ -18,11 +18,12 @@ export default class Timeline extends Component {
         this.createTimeline = this.createTimeline.bind(this);
         this.configureEvent = this.configureEvent.bind(this);
         this.convertISO = this.convertISO.bind(this);
+        this.runTimeline = this.runTimeline.bind(this);
     }
 
     createTimeline() {
         const container = document.getElementById('timelineContainer');
-        const timeline = new vis.Timeline(container, items, timelineOptions)
+        timeline = new vis.Timeline(container, items, timelineOptions);
     }
 
     configureEvent(event) {
@@ -33,10 +34,25 @@ export default class Timeline extends Component {
         return dateString.match(/[^T]*/)[0];
     }
 
+    runTimeline(timeline) {
+        if(items.length === 1) timeline.focus(Object.keys(items._data)[0]);
+        if(timeline && items.length > 0) {6
+            const arr = Object.keys(items._data).map(key => items._data[key]);
+            arr.sort((a,b) => {
+                a = new Date(a.start);
+                b = new Date(b.start);
+                return a-b;
+            });
+             const firstEvent = arr[0];
+             const finalEvent = arr[arr.length-1];
+             timeline.focus(firstEvent.id);
+             setTimeout(() => timeline.focus([finalEvent.id], {animation: {duration: 3500, easingFunction: 'linear'}}), 1000);
+        }
+    }
+
 
     componentDidMount() {
          const events = this.props.events.map(event => {
-            console.log(event);
             return {id: event.id, content: event.title, start: this.convertISO(event.date)}
         });
         items = new vis.DataSet(events);
@@ -53,8 +69,17 @@ export default class Timeline extends Component {
             this.props.events.forEach(event => items.add(this.configureEvent(event)));
         }
 
+        if(timeline) {
+            timeline.fit();
+        }
+
+
         return(
-                <div id="timelineContainer"></div>
+                <div>
+                    <div id="timelineContainer"></div>
+                    <button className="btn btn-lg btn-primary"
+                            onClick={() => this.runTimeline(timeline)}>Run</button>
+                </div>
         );
     }
 }
