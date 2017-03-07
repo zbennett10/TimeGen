@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import vis from 'vis';
 import {connect} from 'react-redux';
+import '../index.css';
 
 let items;
 const timelineOptions = {
     height: 400,
-    width: 1100,
+    width: 750,
     zoomMin: 1000 * 60 * 60 * 24,
     start: '2012-03-04',
     end: '2020-03-04'
@@ -21,14 +22,6 @@ export default class Timeline extends Component {
 
     createTimeline() {
         const container = document.getElementById('timelineContainer');
-        //help jest testing
-        if(!container) {
-            (function testCreateTimeline() {
-                const testContainer = document.createElement('div');
-                document.body.appendChild(testContainer);
-                const timeline = new vis.Timeline(testContainer, items, timelineOptions);
-            })();
-        }
         const timeline = new vis.Timeline(container, items, timelineOptions)
     }
 
@@ -61,9 +54,7 @@ export default class Timeline extends Component {
         }
 
         return(
-            <div className="container text-center">
                 <div id="timelineContainer"></div>
-            </div>
         );
     }
 }

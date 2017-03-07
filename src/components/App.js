@@ -4,7 +4,9 @@ import Event from './Event';
 import {connect} from 'react-redux';
 import * as actions from '../actions/index';
 import Timeline from './Timeline';
-
+import Header from './Header';
+import Footer from './Footer';
+import '../index.css';
 //connect this component up to redux
 
 class App extends Component {
@@ -18,14 +20,23 @@ class App extends Component {
     });
 
     return (
-      <div className="row">
-        <div className="col-8">
-          <AddEventForm addEvent={this.props.addEvent}/>
+      <div>
+        <Header/>
+        <div className="row">
+          <div className="col-8">
+            <AddEventForm addEvent={this.props.addEvent}/>
+            <div className="row">
+              <div className="col-8">
+                <Timeline events={this.props.events}/>
+              </div>
+            </div>
+          </div>
+          <div className="col-4">
+            {events}
+          </div>
+          
         </div>
-        <div className="col-4">
-          {events}
-        </div>
-        <Timeline events={this.props.events}/>
+        <Footer/>
       </div>
     );
   }

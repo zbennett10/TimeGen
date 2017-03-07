@@ -22,7 +22,7 @@ describe('actions', () => {
             payload: newEvent
         };
         expect(actions.addEvent(newEvent)).toEqual(expectedAction);
-    })
+    });
 
     it('creates an action that deletes an event', () => {
         const id = {

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import EditEventModal from './Edit_Event_Modal';
+import '../index.css';
 
 export default class Event extends Component {
     constructor(props) {

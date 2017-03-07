@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
+import '../index.css';
 
 export default class AddEventForm extends Component {
     constructor(props) {
@@ -23,12 +24,21 @@ export default class AddEventForm extends Component {
     render() {
         return(
             <form onSubmit={(e) => this.handleSubmit(e)}>
-                <input name="title" type="text" ref="titleInput"/>
-                <textarea name="description" 
-                        placeholder="Event description"
-                        ref="descriptionInput"/>
-                <input type="date" name="date" ref="dateInput"/>
-                <button action="submit">Submit</button>
+                <div className="form-group row">
+                    <label htmlFor="event-title" className="col-2 col-form-label">Title</label>
+                    <div className="col-10">
+                         <input name="title" type="text" ref="titleInput"/>
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label htmlFor="event-date" className="col-2 col-form-label">Date</label>
+                    <div className="col-10">
+                        <input type="date" name="date" ref="dateInput"/>
+                    </div>
+                </div>
+                
+                
+                <button action="submit" className="btn btn-md btn-primary">Submit</button>
             </form>
         );
     }

@@ -1,6 +1,6 @@
 import Modal from 'react-modal';
 import React, {Component} from 'react';
-
+import '../index.css';
 
 
 const modalStyle = {
