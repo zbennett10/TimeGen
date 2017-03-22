@@ -9,13 +9,13 @@ const initialState = [
     {
         title: "DBU",
         key: _.uniqueId(),
-        date: new Date(2017, 3, 22).toISOString(),
+        date: new Date("03-22-2017").toISOString(),
         hasTimeBar: false
     },
     {
         title: "Mozambique - Trip One",
         key: _.uniqueId(),
-        date: new Date(2017, 4, 24).toISOString(),
+        date: new Date("04-22-2017").toISOString(),
         hasTimeBar: false
     }
 ]

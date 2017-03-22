@@ -18,7 +18,6 @@ class Timeline extends Component {
         super(props);
         this.createTimeline = this.createTimeline.bind(this);
         this.configureEvent = this.configureEvent.bind(this);
-        this.convertISO = this.convertISO.bind(this);
         this.runTimeline = this.runTimeline.bind(this);
         this.addTimelineListeners = this.addTimelineListeners.bind(this);
     }
@@ -29,12 +28,7 @@ class Timeline extends Component {
     }
 
     configureEvent(event) {
-        return {id: event.id, content: event.title, start: this.convertISO(event.date)}
-    }
-
-    convertISO(dateString) {
-        const dateArr = dateString.match(/[^T]*/)[0].split('-');
-        return new Date(dateArr[0], --dateArr[1], dateArr[2]);
+        return {id: event.id, content: event.title, start: convertISO(event.date)}
     }
 
     runTimeline(timeline) {
@@ -53,19 +47,24 @@ class Timeline extends Component {
         }
     }
 
-    addTimelineListeners(timeline) {
+    addTimelineListeners(timeline, props) {
         configureDblClick(timeline);
         configureCurrentTick(timeline);
-        configureItemSelect(timeline, this.props.events, this.props);
+        configureItemSelect(timeline, props.events, props);
     }
 
     componentDidMount() {
          const events = this.props.events.map(event => {
-            return {id: event.id, content: event.title, start: this.convertISO(event.date)}
+            return {id: event.id, content: event.title, start: convertISO(event.date)}
         });
         items = new vis.DataSet(events);
         this.createTimeline();
-        this.addTimelineListeners(timeline);
+        this.addTimelineListeners(timeline, this.props);
+        
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.addTimelineListeners(timeline, nextProps); //send new props to event listeners
     }
 
     render() {
@@ -81,7 +80,6 @@ class Timeline extends Component {
         if(timeline) {
             timeline.fit();
         }
-
 
         return(
                 <div>
@@ -101,22 +99,25 @@ function configureDblClick(timeline) {
     timeline.on('doubleClick', () => timeline.zoomIn(0.2));
 }
 
-//fix addCustomTime not adding vertical bar in the correct position
 function configureItemSelect(timeline, eventArr, props) {
     timeline.on('select', (event) => {
         const eventProps = fetchEvent(eventArr, event.items[0]);
-        if(!eventProps.hasTimeBar) {
-            timeline.addCustomTime(parseEventDate(eventProps.date), eventProps.id);
-            const newEvent = Object.assign({}, eventProps);
-            newEvent.hasTimeBar = true;
-            props.editEvent(newEvent);
-        } else {
+        if(eventProps.hasTimeBar) {
             timeline.removeCustomTime(eventProps.id);
-            const newEvent = Object.assign({}, eventProps);
-            newEvent.hasTimeBar = false;
-            props.editEvent(newEvent);
+            timeline.off('select');
+            props.editEvent(createNewEvent(eventProps, 'hasTimeBar', false));
+        } else {
+            timeline.addCustomTime(convertISO(eventProps.date), eventProps.id);
+            timeline.off('select');
+            props.editEvent(createNewEvent(eventProps, 'hasTimeBar', true));
         }
     });
+}
+
+function createNewEvent(oldEvent, newProp, value) {
+    const newEvent = Object.assign({}, oldEvent);
+    newEvent[newProp] = value;
+    return newEvent;
 }
 
 function fetchEvent(events, id) {
@@ -129,12 +130,10 @@ function configureCurrentTick(timeline) {
     });
 }
 
-//fix this function - is returning wrong date 
-function parseEventDate(date) {
-    // const newFormat = date.substring(0,10).split('-').map(string => Number(string));
-    // return new Date(newFormat[0], newFormat[1] - 1, newFormat[2]); bbbb
-    const dateArr = date.split(/\D+/);
-    return new Date(dateArr[0], dateArr[1] - 1, dateArr[2] - 1, dateArr[3], dateArr[4], dateArr[5]);
+function convertISO(dateString) {
+    const dateArr = dateString.match(/[^T]*/)[0].split('-');
+    const newDate = `${dateArr[1]}-${dateArr[2]}-${dateArr[0]}`;
+    return new Date(newDate);
 }
 
 
