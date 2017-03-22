@@ -14,7 +14,8 @@ export default class AddEventForm extends Component {
         const newEvent = {
             title: this.refs.titleInput.value,
             date: new Date(this.refs.dateInput.value).toISOString(),
-            key: _.uniqueId()
+            key: _.uniqueId(),
+            hasTimeBar: false
         };
         newEvent.id = newEvent.key;
         this.props.addEvent(newEvent);
@@ -43,4 +44,3 @@ export default class AddEventForm extends Component {
         );
     }
 }
-

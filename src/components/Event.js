@@ -26,6 +26,7 @@ export default class Event extends Component {
                                 name="Edit Modal"
                                 key={this.props.id}
                                 id={this.props.id}
+                                hasTimeBar={this.props.hasTimeBar}
                                 open={this.state.modalOpen}
                                 close={() => this.setState({modalOpen: !this.state.modalOpen})}
                                 editEvent={this.props.editEvent}/>

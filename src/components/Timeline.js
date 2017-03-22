@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import vis from 'vis';
 import {connect} from 'react-redux';
 import '../index.css';
+import * as actions from '../actions/index';
 
 let timeline, items;
 const timelineOptions = {
@@ -12,13 +13,14 @@ const timelineOptions = {
     end: '2020-03-04'
 };
 
-export default class Timeline extends Component {
+class Timeline extends Component {
     constructor(props) {
         super(props);
         this.createTimeline = this.createTimeline.bind(this);
         this.configureEvent = this.configureEvent.bind(this);
         this.convertISO = this.convertISO.bind(this);
         this.runTimeline = this.runTimeline.bind(this);
+        this.addTimelineListeners = this.addTimelineListeners.bind(this);
     }
 
     createTimeline() {
@@ -31,7 +33,8 @@ export default class Timeline extends Component {
     }
 
     convertISO(dateString) {
-        return dateString.match(/[^T]*/)[0];
+        const dateArr = dateString.match(/[^T]*/)[0].split('-');
+        return new Date(dateArr[0], --dateArr[1], dateArr[2]);
     }
 
     runTimeline(timeline) {
@@ -50,6 +53,11 @@ export default class Timeline extends Component {
         }
     }
 
+    addTimelineListeners(timeline) {
+        configureDblClick(timeline);
+        configureCurrentTick(timeline);
+        configureItemSelect(timeline, this.props.events, this.props);
+    }
 
     componentDidMount() {
          const events = this.props.events.map(event => {
@@ -57,6 +65,7 @@ export default class Timeline extends Component {
         });
         items = new vis.DataSet(events);
         this.createTimeline();
+        this.addTimelineListeners(timeline);
     }
 
     render() {
@@ -86,3 +95,47 @@ export default class Timeline extends Component {
 
 
 
+//helpers
+
+function configureDblClick(timeline) {
+    timeline.on('doubleClick', () => timeline.zoomIn(0.2));
+}
+
+//fix addCustomTime not adding vertical bar in the correct position
+function configureItemSelect(timeline, eventArr, props) {
+    timeline.on('select', (event) => {
+        const eventProps = fetchEvent(eventArr, event.items[0]);
+        if(!eventProps.hasTimeBar) {
+            timeline.addCustomTime(parseEventDate(eventProps.date), eventProps.id);
+            const newEvent = Object.assign({}, eventProps);
+            newEvent.hasTimeBar = true;
+            props.editEvent(newEvent);
+        } else {
+            timeline.removeCustomTime(eventProps.id);
+            const newEvent = Object.assign({}, eventProps);
+            newEvent.hasTimeBar = false;
+            props.editEvent(newEvent);
+        }
+    });
+}
+
+function fetchEvent(events, id) {
+    return events.find(event => event.id === id);
+}
+
+function configureCurrentTick(timeline) {
+    timeline.on('currentTimeTick', () => {
+    
+    });
+}
+
+//fix this function - is returning wrong date 
+function parseEventDate(date) {
+    // const newFormat = date.substring(0,10).split('-').map(string => Number(string));
+    // return new Date(newFormat[0], newFormat[1] - 1, newFormat[2]); bbbb
+    const dateArr = date.split(/\D+/);
+    return new Date(dateArr[0], dateArr[1] - 1, dateArr[2] - 1, dateArr[3], dateArr[4], dateArr[5]);
+}
+
+
+export default connect(null, actions)(Timeline);

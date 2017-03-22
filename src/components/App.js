@@ -16,6 +16,7 @@ class App extends Component {
                     key={event.key} 
                     id={event.id}
                     date={event.date}
+                    hasTimeBar={event.hasTimeBar}
                     editEvent={this.props.editEvent}/>
     });
 

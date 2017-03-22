@@ -40,7 +40,8 @@ export default class EditEventModal extends Component {
             title: this.refs.titleInput.value,
             date: new Date(this.refs.dateInput.value).toISOString() || this.props.date,
             key: this.props.id,
-            id: this.props.id
+            id: this.props.id,
+            hasTimeBar: this.props.hasTimeBar
         }
         this.props.editEvent(newEvent);
         this.props.close();
